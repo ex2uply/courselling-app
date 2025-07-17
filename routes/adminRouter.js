@@ -9,7 +9,7 @@ const saltRounds = 7;
 
 require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRETADMIN;
 
 
 
@@ -18,7 +18,8 @@ function validData(req, res, next) {
   const validData = z.object({
     email: z.email(),
     password: z.string(),
-    name: z.string(),
+    firstName: z.string(),
+    lastName: z.string()
   });
 
   const parsedData = validData.safeParse(req.body);
@@ -33,16 +34,14 @@ function validData(req, res, next) {
 }
 
 adminRouter.post("/signup", validData, async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const name = req.body.name;
-
+  const {email, password, firstName,lastName} = req.body;
   try{
     const hashPassword = await bcrypt.hash(password,saltRounds);
-    await UserModel.create({
+    await AdminModel.create({
       email: email,
       password: hashPassword,
-      name: name
+      firstName: firstName,
+      lastName: lastName
     })
     res.send({
       message: "YOU ARE SIGNED UP."
@@ -67,19 +66,19 @@ adminRouter.post("/signin",validData,async (req,res)=>{
   const password = req.body.password;
 
 
-  const user = await UserModel.findOne({
+  const admin = await AdminModel.findOne({
     email: email
   })
-  if(!user){
+  if(!admin){
     res.status(403).send({
       message: "Email id is not signed in."
     })
   }
-  const verify = await bcrypt.compare(password,user.password);
+  const verify = await bcrypt.compare(password,admin.password);
 
   if(verify){
     const token = jwt.sign({
-      id: user._id
+      id: admin._id
     },JWT_SECRET);
     res.send({
       token: token,
@@ -92,6 +91,15 @@ adminRouter.post("/signin",validData,async (req,res)=>{
       message: "Incorrect Password."
     })
   }
+});
+
+
+adminRouter.post("/course", (req,res)=>{
+
+});
+
+adminRouter.get("/course/bulk",(req,res)=>{
+
 });
 
 

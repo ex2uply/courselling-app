@@ -3,14 +3,14 @@ const z = require("zod");
 // const mongoose  = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { UserModel } = require("../../fe+be/db");
+const { UserModel } = require("../db/db");
 
 const saltRounds = 7;
 const userRouter = express.Router();
 
 require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRETADMIN;
 
 
 
@@ -20,7 +20,8 @@ function validData(req, res, next) {
   const validData = z.object({
     email: z.email(),
     password: z.string(),
-    name: z.string(),
+    firstName: z.string(),
+    lastName: z.string()
   });
 
   const parsedData = validData.safeParse(req.body);
@@ -35,16 +36,15 @@ function validData(req, res, next) {
 }
 
 userRouter.post("/signup", validData, async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const name = req.body.name;
+  const {email, password, firstName,lastName} = req.body;
 
   try{
     const hashPassword = await bcrypt.hash(password,saltRounds);
     await UserModel.create({
       email: email,
       password: hashPassword,
-      name: name
+      firstName: firstName,
+      lastName: lastName
     })
     res.send({
       message: "YOU ARE SIGNED UP."
@@ -74,7 +74,7 @@ userRouter.post("/signin",validData,async (req,res)=>{
   })
   if(!user){
     res.status(403).send({
-      message: "Email id is not signed in."
+      message: "Email id not found. Please Sign Up"
     })
   }
   const verify = await bcrypt.compare(password,user.password);
@@ -95,8 +95,5 @@ userRouter.post("/signin",validData,async (req,res)=>{
     })
   }
 });
-
-
-
 
 module.exports = userRouter;

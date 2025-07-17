@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const { string } = require("zod");
-require('dotenv').config();
 
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.ObjectId;

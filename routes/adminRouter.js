@@ -1,15 +1,17 @@
-const {Router} = require("express");
+const {Router, application} = require("express");
 const adminRouter = Router();
 const z = require("zod");
 const mongoose  = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const {AdminModel} = require('../db/db');
+const {AdminModel, CourseModel} = require('../db/db');
 const saltRounds = 7;
 
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRETADMIN;
+
+const adminMiddleware = require("../middleware/admin");
 
 
 
@@ -93,8 +95,26 @@ adminRouter.post("/signin",validData,async (req,res)=>{
   }
 });
 
+adminRouter.use(adminMiddleware);
 
-adminRouter.post("/course", (req,res)=>{
+adminRouter.post("/course", async (req,res)=>{
+
+  const adminId = req.id;
+
+  const {Name, description,ImageUrl,Price} = req.body;
+
+  const course = await CourseModel.create({
+    Name: Name,
+    description: description,
+    ImageUrl: ImageUrl,
+    Price: Price,
+    InstructorId: adminId
+  })
+
+  res.send({
+    message: "COURSE CREATED.",
+    courseId: course._id
+  })
 
 });
 

@@ -7,6 +7,8 @@ const {userMiddleware} = require("../middleware/user");
 const { CourseModel, PurchaseModel } = require("../db/db");
 
 
+
+//see no precheck as previewing all courses should be okay... right?
 courseRouter.get("/preview",async(req,res)=>{
     const course = await CourseModel.find({});
 
@@ -15,6 +17,8 @@ courseRouter.get("/preview",async(req,res)=>{
       course: course
     });
 })
+
+
 
 courseRouter.use(userMiddleware);
 
@@ -44,6 +48,8 @@ courseRouter.get("/allPurchases",async (req,res)=>{
    const courses = await PurchaseModel.find({
       userId: userId
    });
+
+   
 
    res.send({
     courses: courses

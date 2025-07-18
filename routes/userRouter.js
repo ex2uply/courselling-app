@@ -3,7 +3,7 @@ const z = require("zod");
 // const mongoose  = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { UserModel } = require("../db/db");
+const { UserModel, PurchaseModel } = require("../db/db");
 
 const saltRounds = 7;
 const userRouter = express.Router();
@@ -95,5 +95,18 @@ userRouter.post("/signin",validData,async (req,res)=>{
     })
   }
 });
+
+userRouter.use(userMiddleware);
+
+userRouter.get("/purchases", (req,res)=>{
+  const userId = req.id;
+
+  const purchases = PurchaseModel.find(userId);
+
+  res.send({
+    purchases: purchases
+  });
+
+})
 
 module.exports = userRouter;

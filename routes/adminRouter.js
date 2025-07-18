@@ -95,6 +95,8 @@ adminRouter.post("/signin",validData,async (req,res)=>{
   }
 });
 
+
+//router to check valid admin logged in
 adminRouter.use(adminMiddleware);
 
 adminRouter.post("/course", async (req,res)=>{
@@ -118,8 +120,45 @@ adminRouter.post("/course", async (req,res)=>{
 
 });
 
-adminRouter.get("/course/bulk",(req,res)=>{
+adminRouter.put("/course",async (req,res)=>{
+    const adminId = req.id;
+    const courseId  = req.body.courseId;
 
+    const course = await CourseModel.findById(courseId);
+
+    const InstructorId = course.InstructorId;
+
+    if(InstructorId!=adminId) res.send({
+      message: "NOT AUTHORIZED TO UPDATE THIS COURSE."
+    })
+
+    const {Name, description,ImageUrl,Price} = req.body;
+
+    await course.updateOne({
+      Name,
+      description,
+      ImageUrl,
+      Price
+    })
+
+    res.send({
+      message: "Course updated."
+    });
+
+});
+
+adminRouter.get("/course/bulk",async (req,res)=>{
+
+  const adminId = req.id;
+
+  const course = await CourseModel.find({
+    InstructorId: adminId
+  })
+
+  res.send({
+    courses: course
+  });
+  
 });
 
 

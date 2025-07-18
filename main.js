@@ -1,10 +1,10 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose"); 
 
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter");
-
-require('dotenv').config();
+;
 
 const MONGODBURL = process.env.MONGODBURL;
 
